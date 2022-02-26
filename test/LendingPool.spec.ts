@@ -38,7 +38,19 @@ describe("LendingPool", function(){
 
     //Act
     //Assert
-    await expect(lp.deposit(token, amount)).eventually.to.rejectedWith(Error, "VM Exception while processing transaction: reverted with reason string 'ERC20: insufficient allowance")
+    await expect(lp.deposit(token, amount)).to.be.revertedWith("ERC20: insufficient allowance")
+  });
+
+  it('deposit should be reverted with "amount must be more than 0"', async function () {
+    // Arrange
+    const amount = 0
+    let token = this.wethMock.address
+    const lp = this.lendingPool
+    this.wethMock.approve(lp.address, amount)
+
+    //Act
+    //Assert
+    await expect(lp.deposit(token, amount)).to.be.revertedWith("Amount must be more than 0")
   });
 
   it('withdraw should be successful', async function () {
@@ -53,7 +65,7 @@ describe("LendingPool", function(){
     
   });
 
-  it('withdraw should be reverted not enough money', async function () {
+  it('withdraw should be reverted "not enough money"', async function () {
     // Arrange
     const amount = 1000
     let token = this.wethMock.address
@@ -65,7 +77,7 @@ describe("LendingPool", function(){
     await expect(this.lendingPool.withdraw(token, amount + 1)).to.be.revertedWith("Not enough tokens")
   });
 
-  it('withdraw should be reverted staking balance is now 0', async function () {
+  it('withdraw should be reverted "staking balance is now 0"', async function () {
     // Arrange
     const amount = 1000
     let token = this.wethMock.address
