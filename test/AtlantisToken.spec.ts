@@ -1,11 +1,11 @@
-// test/AtlantisToken.test.js
-// Load dependencies
-const { expect } = require('chai');
+const chai = require('chai');
+const { expect } = chai;
+const hre = require("hardhat");
 
 // Start test block
 describe('AtlantisToken', function () {
   before(async function () {
-    this.AtlantisToken = await ethers.getContractFactory('AtlantisToken');
+    this.AtlantisToken = await hre.ethers.getContractFactory('AtlantisToken');
     this.INITIAL_SUPPLY = 100000000;
   });
 
@@ -16,7 +16,7 @@ describe('AtlantisToken', function () {
 
   // Test case
   it('totalSupply returns a value of INITIAL_SUPPLY', async function () {
-    totalSupply = await this.atlantisToken.totalSupply();
+    let totalSupply = await this.atlantisToken.totalSupply();
     expect(totalSupply.toString()).to.equal(this.INITIAL_SUPPLY.toString());
   });
 });
