@@ -1,4 +1,5 @@
 .env
+secrets.json
 #Buidler files
 cache
 artifacts
