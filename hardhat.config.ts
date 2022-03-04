@@ -1,5 +1,6 @@
 // hardhat.config.js
-require('@nomiclabs/hardhat-ethers');
+import '@nomiclabs/hardhat-ethers';
+import "@nomiclabs/hardhat-waffle";
 const { alchemyApiKey, mnemonic } = require('./secrets.json');
 /**
  * @type import('hardhat/config').HardhatUserConfig

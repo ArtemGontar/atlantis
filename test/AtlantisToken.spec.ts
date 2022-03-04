@@ -1,11 +1,10 @@
-const chai = require('chai');
-const { expect } = chai;
-const hre = require("hardhat");
+import { expect } from 'chai';
+import { ethers } from 'hardhat'
 
 // Start test block
 describe('AtlantisToken', function () {
   before(async function () {
-    this.AtlantisToken = await hre.ethers.getContractFactory('AtlantisToken');
+    this.AtlantisToken = await ethers.getContractFactory('AtlantisToken');
     this.INITIAL_SUPPLY = 100000000;
   });
 

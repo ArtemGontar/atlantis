@@ -1,5 +1,6 @@
 import { describe } from "mocha"
 import { setupMocks } from "./helpers/setupMocks"
+import { ethers } from 'hardhat'
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
@@ -10,7 +11,7 @@ const { expect } = chai;
 
 describe("LendingPool", function(){
   before(async function() {
-    this.LendingPool = await hre.ethers.getContractFactory('LendingPool');
+    this.LendingPool = await ethers.getContractFactory('LendingPool');
     this.wethMock = await setupMocks("WethMock");
   })
 
