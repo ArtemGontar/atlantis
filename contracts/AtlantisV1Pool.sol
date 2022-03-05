@@ -14,15 +14,16 @@ import './libraries/Oracle.sol';
 import './libraries/Position.sol';
 
 contract AtlantisV1Pool is IAtlantisV1Pool, NoDelegateCall {   
-//   using LowGasSafeMath for uint256;
-//   using LowGasSafeMath for int256;
-//   using SafeCast for uint256;
-//   using SafeCast for int256;
-//   using Tick for mapping(int24 => Tick.Info);
-//   using TickBitmap for mapping(int16 => uint256);
-//   using Position for mapping(bytes32 => Position.Info);
-//   using Position for Position.Info;
-
+  using LowGasSafeMath for uint256;
+  using LowGasSafeMath for int256;
+  using SafeCast for uint256;
+  using SafeCast for int256;
+  using Tick for mapping(int24 => Tick.Info);
+  //using TickBitmap for mapping(int16 => uint256);
+  using Position for mapping(bytes32 => Position.Info);
+  using Position for Position.Info;
+  using Oracle for Oracle.Observation[65535];
+  
   /// @inheritdoc IAtlantisV1PoolImmutables
   address public immutable override factory;
   /// @inheritdoc IAtlantisV1PoolImmutables
@@ -136,70 +137,70 @@ contract AtlantisV1Pool is IAtlantisV1Pool, NoDelegateCall {
         uint160 secondsPerLiquidityInsideX128,
         uint32 secondsInside)
   {    
-    // checkTicks(tickLower, tickUpper);
+    checkTicks(tickLower, tickUpper);
 
-    // int56 tickCumulativeLower;
-    // int56 tickCumulativeUpper;
-    // uint160 secondsPerLiquidityOutsideLowerX128;
-    // uint160 secondsPerLiquidityOutsideUpperX128;
-    // uint32 secondsOutsideLower;
-    // uint32 secondsOutsideUpper;
-    // {
-    //     Tick.Info storage lower = ticks[tickLower];
-    //     Tick.Info storage upper = ticks[tickUpper];
-    //     bool initializedLower;
-    //     (tickCumulativeLower, secondsPerLiquidityOutsideLowerX128, secondsOutsideLower, initializedLower) = (
-    //         lower.tickCumulativeOutside,
-    //         lower.secondsPerLiquidityOutsideX128,
-    //         lower.secondsOutside,
-    //         lower.initialized
-    //     );
-    //     require(initializedLower);
+    int56 tickCumulativeLower;
+    int56 tickCumulativeUpper;
+    uint160 secondsPerLiquidityOutsideLowerX128;
+    uint160 secondsPerLiquidityOutsideUpperX128;
+    uint32 secondsOutsideLower;
+    uint32 secondsOutsideUpper;
+    {
+        Tick.Info storage lower = ticks[tickLower];
+        Tick.Info storage upper = ticks[tickUpper];
+        bool initializedLower;
+        (tickCumulativeLower, secondsPerLiquidityOutsideLowerX128, secondsOutsideLower, initializedLower) = (
+            lower.tickCumulativeOutside,
+            lower.secondsPerLiquidityOutsideX128,
+            lower.secondsOutside,
+            lower.initialized
+        );
+        require(initializedLower);
 
-    //     bool initializedUpper;
-    //     (tickCumulativeUpper, secondsPerLiquidityOutsideUpperX128, secondsOutsideUpper, initializedUpper) = (
-    //         upper.tickCumulativeOutside,
-    //         upper.secondsPerLiquidityOutsideX128,
-    //         upper.secondsOutside,
-    //         upper.initialized
-    //     );
-    //     require(initializedUpper);
-    // }
+        bool initializedUpper;
+        (tickCumulativeUpper, secondsPerLiquidityOutsideUpperX128, secondsOutsideUpper, initializedUpper) = (
+            upper.tickCumulativeOutside,
+            upper.secondsPerLiquidityOutsideX128,
+            upper.secondsOutside,
+            upper.initialized
+        );
+        require(initializedUpper);
+    }
 
-    // Slot0 memory _slot0 = slot0;
+    Slot0 memory _slot0 = slot0;
 
-    // if (_slot0.tick < tickLower) {
-    //     return (
-    //         tickCumulativeLower - tickCumulativeUpper,
-    //         secondsPerLiquidityOutsideLowerX128 - secondsPerLiquidityOutsideUpperX128,
-    //         secondsOutsideLower - secondsOutsideUpper
-    //     );
-    // } 
-    // else if (_slot0.tick < tickUpper) {
-    //     uint32 time = _blockTimestamp();
-    //     (int56 tickCumulative, uint160 secondsPerLiquidityCumulativeX128) =
-    //         observations.observeSingle(
-    //             time,
-    //             0,
-    //             _slot0.tick,
-    //             _slot0.observationIndex,
-    //             liquidity,
-    //             _slot0.observationCardinality
-    //         );
-    //     return (
-    //         tickCumulative - tickCumulativeLower - tickCumulativeUpper,
-    //         secondsPerLiquidityCumulativeX128 -
-    //             secondsPerLiquidityOutsideLowerX128 -
-    //             secondsPerLiquidityOutsideUpperX128,
-    //         time - secondsOutsideLower - secondsOutsideUpper
-    //     );
-    // } else {
-    //     return (
-    //         tickCumulativeUpper - tickCumulativeLower,
-    //         secondsPerLiquidityOutsideUpperX128 - secondsPerLiquidityOutsideLowerX128,
-    //         secondsOutsideUpper - secondsOutsideLower
-    //     );
-    // }
+    if (_slot0.tick < tickLower) {
+        return (
+            tickCumulativeLower - tickCumulativeUpper,
+            secondsPerLiquidityOutsideLowerX128 - secondsPerLiquidityOutsideUpperX128,
+            secondsOutsideLower - secondsOutsideUpper
+        );
+    } 
+    else if (_slot0.tick < tickUpper) {
+        uint32 time = _blockTimestamp();
+        (int56 tickCumulative, uint160 secondsPerLiquidityCumulativeX128) =
+            observations.observeSingle(
+                time,
+                0,
+                _slot0.tick,
+                _slot0.observationIndex,
+                liquidity,
+                _slot0.observationCardinality
+            );
+        return (
+            tickCumulative - tickCumulativeLower - tickCumulativeUpper,
+            secondsPerLiquidityCumulativeX128 -
+                secondsPerLiquidityOutsideLowerX128 -
+                secondsPerLiquidityOutsideUpperX128,
+            time - secondsOutsideLower - secondsOutsideUpper
+        );
+    } else {
+        return (
+            tickCumulativeUpper - tickCumulativeLower,
+            secondsPerLiquidityOutsideUpperX128 - secondsPerLiquidityOutsideLowerX128,
+            secondsOutsideUpper - secondsOutsideLower
+        );
+    }
   }
 
   /// @inheritdoc IAtlantisV1PoolDerivedState
@@ -210,14 +211,14 @@ contract AtlantisV1Pool is IAtlantisV1Pool, NoDelegateCall {
       noDelegateCall
       returns (int56[] memory tickCumulatives, uint160[] memory secondsPerLiquidityCumulativeX128s)
   {
-    // return observations.observe(
-    //   _blockTimestamp(),
-    //   secondsAgos,
-    //   slot0.tick,
-    //   slot0.observationIndex,
-    //   liquidity,
-    //   slot0.observationCardinality
-    // );
+    return observations.observe(
+      _blockTimestamp(),
+      secondsAgos,
+      slot0.tick,
+      slot0.observationIndex,
+      liquidity,
+      slot0.observationCardinality
+    );
   }
 
 
