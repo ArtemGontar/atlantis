@@ -9,7 +9,7 @@ build/
 .vscode
 .idea
 /types
-
+/typechain-types
 deployed-contracts.json
 
 coverage
