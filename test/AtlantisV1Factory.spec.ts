@@ -2,6 +2,7 @@ import { describe } from "mocha";
 import { Wallet } from 'ethers'
 import { ethers } from 'hardhat'
 import { expect } from "chai";
+import { AtlantisV1Factory } from '../typechain-types/AtlantisV1Factory'
 import { FeeAmount, TICK_SPACINGS, getCreate2Address } from "./helpers/utilities";
 
 const { constants } = ethers
@@ -12,7 +13,7 @@ const TEST_TOKEN_ADDRESSES: [string, string] = [
 
 describe("Factory", function(){
   let wallet: Wallet, other: Wallet
-  let factory: any
+  let factory: AtlantisV1Factory
   let poolBytecode: string
 
   before('deploy factory', async function () {
@@ -64,7 +65,7 @@ describe("Factory", function(){
     
     }
 
-    
+
   describe('#createPool', async function () {
     
     it('createPool should be succeeds for low fee pool', async function () {

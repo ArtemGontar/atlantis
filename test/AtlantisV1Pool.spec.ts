@@ -2,11 +2,12 @@ import { expect } from "chai";
 import { Wallet } from "ethers";
 import { ethers } from "hardhat";
 import { describe } from "mocha";
+import { AtlantisV1Pool } from '../typechain-types/AtlantisV1Pool'
 
 describe('AtlantisV1Pool', async () => {
   let wallet: Wallet, other: Wallet
   let Pool: any;
-  let pool: any;
+  let pool: AtlantisV1Pool;
   
   before('create pool', async () => {
     Pool = await ethers.getContractFactory('AtlantisV1Pool');
