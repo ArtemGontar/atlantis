@@ -8,8 +8,19 @@ const { alchemyApiKey, mnemonic } = require('./secrets.json');
  * @type import('hardhat/config').HardhatUserConfig
  */
  module.exports = {
-  solidity: "0.8.10",
+  solidity: {
+    version: '0.8.10',
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 800,
+      },
+    },
+  },
   networks: {
+    hardhat: {
+      allowUnlimitedContractSize: false,
+    },
     rinkeby: {
       url: `https://eth-rinkeby.alchemyapi.io/v2/${alchemyApiKey}`,
       accounts: { mnemonic: mnemonic },

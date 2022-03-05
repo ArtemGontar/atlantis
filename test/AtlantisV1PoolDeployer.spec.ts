@@ -1,6 +1,7 @@
 import { describe } from "mocha"
 import { expect } from "chai"
 import { ethers } from 'hardhat'
+import { TestAtlantisV1PoolDeployer } from '../typechain-types/TestAtlantisV1PoolDeployer'
 
 const TEST_TOKEN_ADDRESSES: [string, string] = [
   '0x1000000000000000000000000000000000000000',
@@ -10,13 +11,15 @@ const TEST_TOKEN_ADDRESSES: [string, string] = [
 const TEST_FACTORY_ADDRESS: string = '0x3000000000000000000000000000000000000000'
 
 describe("PoolDeployer", function(){
+  let PoolDeployer: any;
+  let poolDeployer: TestAtlantisV1PoolDeployer;
   before(async function() {
-    this.PoolDeployer = await ethers.getContractFactory('TestAtlantisV1PoolDeployer');
+    PoolDeployer = await ethers.getContractFactory('TestAtlantisV1PoolDeployer');
   })
 
   beforeEach(async function () {
-    this.poolDeployer = await this.PoolDeployer.deploy();
-    await this.poolDeployer.deployed();
+    poolDeployer = await this.PoolDeployer.deploy();
+    await poolDeployer.deployed();
   })
 
   it('deploy should return non zero address', async function () {
