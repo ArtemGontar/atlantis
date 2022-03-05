@@ -17,8 +17,8 @@ describe("PoolDeployer", function(){
     PoolDeployer = await ethers.getContractFactory('TestAtlantisV1PoolDeployer');
   })
 
-  beforeEach(async function () {
-    poolDeployer = await this.PoolDeployer.deploy();
+  beforeEach('create pool deployer', async function () {
+    poolDeployer = await PoolDeployer.deploy();
     await poolDeployer.deployed();
   })
 
@@ -27,7 +27,7 @@ describe("PoolDeployer", function(){
     const feeAmount = 500;
     const tickSpacing = 10;
     // Act
-    const pool = await this.poolDeployer._deploy(TEST_FACTORY_ADDRESS, TEST_TOKEN_ADDRESSES[0], TEST_TOKEN_ADDRESSES[1], feeAmount, tickSpacing);
+    const pool = await poolDeployer._deploy(TEST_FACTORY_ADDRESS, TEST_TOKEN_ADDRESSES[0], TEST_TOKEN_ADDRESSES[1], feeAmount, tickSpacing);
     // Assert
     expect(pool, 'pool').to.not.equal(undefined)
   })
