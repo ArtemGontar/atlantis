@@ -9,11 +9,11 @@ const { alchemyApiKey, mnemonic } = require('./secrets.json');
  */
  module.exports = {
   solidity: {
-    version: '0.8.6',
+    version: '0.8.5',
     settings: {
       optimizer: {
         enabled: true,
-        runs: 800,
+        runs: 810,
       },
     },
   },
