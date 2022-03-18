@@ -54,15 +54,6 @@ describe("Factory", function(){
       await expect(factory.createPool(tokens[1], tokens[0], feeAmount)).to.be.reverted
       expect(await factory.getPool(tokens[0], tokens[1], feeAmount), 'getPool in order').to.eq(create2Address)
       expect(await factory.getPool(tokens[1], tokens[0], feeAmount), 'getPool in reverse').to.eq(create2Address)
-      
-      const poolContractFactory = await ethers.getContractFactory('AtlantisV1Pool')
-      // const pool = poolContractFactory.attach(create2Address)
-      // expect(await pool.factory(), 'pool factory address').to.eq(factory.address)
-      // expect(await pool.token0(), 'pool token0').to.eq(TEST_TOKEN_ADDRESSES[0])
-      // expect(await pool.token1(), 'pool token1').to.eq(TEST_TOKEN_ADDRESSES[1])
-      // expect(await pool.fee(), 'pool fee').to.eq(feeAmount)
-      // expect(await pool.tickSpacing(), 'pool tick spacing').to.eq(tickSpacing)
-    
     }
 
 

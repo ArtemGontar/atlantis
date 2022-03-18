@@ -1,7 +1,9 @@
+import bn from 'bignumber.js'
 import { BigNumber, BigNumberish, constants, Contract, ContractTransaction, Wallet } from "ethers";
 import { ethers } from "hardhat"
 import { MockTimeAtlantisV1Pool } from "../../typechain-types/MockTimeAtlantisV1Pool";
 import { TestAtlantisV1Callee } from "../../typechain-types/TestAtlantisV1Callee";
+import { TestAtlantisV1Router } from '../../typechain-types/TestAtlantisV1Router';
 import { TestERC20 } from "../../typechain-types/TestERC20";
 
 export enum FeeAmount {
@@ -17,7 +19,7 @@ export const getMaxLiquidityPerTick = (tickSpacing: number) =>
     .pow(128)
     .sub(1)
     .div((getMaxTick(tickSpacing) - getMinTick(tickSpacing)) / tickSpacing + 1)
-    
+
 export const MaxUint128 = BigNumber.from(2).pow(128).sub(1)
 export const MIN_SQRT_RATIO = BigNumber.from('4295128739')
 export const MAX_SQRT_RATIO = BigNumber.from('1461446703485210103287273052203988822378723970342')
@@ -37,6 +39,21 @@ export function getCreate2Address(factoryAddress: string, tokens: [string, strin
   const encodedByteCode = ethers.utils.keccak256(bytecode);
   const create2Address = ethers.utils.getCreate2Address(factoryAddress, encodedConstructorArgumentsEncoded, encodedByteCode);
   return create2Address;
+}
+
+bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
+
+
+// returns the sqrt price as a 64x96
+export function encodePriceSqrt(reserve1: BigNumberish, reserve0: BigNumberish): BigNumber {
+  return BigNumber.from(
+    new bn(reserve1.toString())
+      .div(reserve0.toString())
+      .sqrt()
+      .multipliedBy(new bn(2).pow(96))
+      .integerValue(3)
+      .toString()
+  )
 }
 
 export type SwapFunction = (
@@ -182,5 +199,41 @@ export function createPoolFunctions({
     swap1ForExact0,
     mint,
     flash,
+  }
+}
+
+export interface MultiPoolFunctions {
+  swapForExact0Multi: SwapFunction
+  swapForExact1Multi: SwapFunction
+}
+
+export function createMultiPoolFunctions({
+  inputToken,
+  swapTarget,
+  poolInput,
+  poolOutput,
+}: {
+  inputToken: TestERC20
+  swapTarget: TestAtlantisV1Router
+  poolInput: MockTimeAtlantisV1Pool
+  poolOutput: MockTimeAtlantisV1Pool
+}): MultiPoolFunctions {
+  async function swapForExact0Multi(amountOut: BigNumberish, to: Wallet | string): Promise<ContractTransaction> {
+    const method = swapTarget.swapForExact0Multi
+    await inputToken.approve(swapTarget.address, constants.MaxUint256)
+    const toAddress = typeof to === 'string' ? to : to.address
+    return method(toAddress, poolInput.address, poolOutput.address, amountOut)
+  }
+
+  async function swapForExact1Multi(amountOut: BigNumberish, to: Wallet | string): Promise<ContractTransaction> {
+    const method = swapTarget.swapForExact1Multi
+    await inputToken.approve(swapTarget.address, constants.MaxUint256)
+    const toAddress = typeof to === 'string' ? to : to.address
+    return method(toAddress, poolInput.address, poolOutput.address, amountOut)
+  }
+
+  return {
+    swapForExact0Multi,
+    swapForExact1Multi,
   }
 }
